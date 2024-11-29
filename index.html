@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Převodník teplot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://img.icons8.com/ios/50/ffffff/thermometer.png" type="image/x-icon"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5; /* Světlé pozadí */
+            color: #333333; /* Tmavý text pro světlý režim */
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #000000; /* Černé pozadí pro tmavý režim */
+            color: #ffffff; /* Světlý text pro tmavý režim */
+        }
+
+        h1 {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+            font-weight: bold;
+            background: linear-gradient(to left, #ff6347, #f39c12);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+            transition: transform 0.4s ease, box-shadow 0.3s ease;
+        }
+
+        .container.dark-mode {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .container.light-mode {
+            background-color: rgba(255, 255, 255, 0.7); /* Světlé pozadí pro světlý režim */
+        }
+
+        .container:hover {
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff6347;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: #ff4500;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: block;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            border-radius: 20px;
+            border: 2px solid #2980b9;
+            background-color: #333;
+            font-size: 16px;
+            color: #fff;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        body.light-mode input[type="number"], body.light-mode select {
+            background-color: #ffffff; /* Světlé pozadí pro inputy ve světlém režimu */
+            color: #333333; /* Tmavý text pro inputy ve světlém režimu */
+            border-color: #2980b9;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: #ff6347;
+            background-color: #444;
+        }
+
+        button {
+            padding: 15px;
+            background-color: #ff6347;
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #f39c12;
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .result-dark {
+            color: #fff;
+            text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.7);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #ff6347, #f39c12);
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: bold;
+            font-size: 36px;
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body.dark-mode label, .dark-mode .input-container input {
+            color: #ffffff;
+        }
+
+        body.dark-mode .input-container select, body.dark-mode .input-container input[type="number"] {
+            background-color: #444;
+            color: #ffffff;
+            border-color: #f39c12;
+        }
+
+        body.light-mode label, .light-mode .input-container input {
+            color: #333333;
+        }
+
+        body.light-mode .input-container select, body.light-mode .input-container input[type="number"] {
+            background-color: #ffffff;
+            color: #333333;
+            border-color: #2980b9;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">Přepnout režim</div>
+    <div class="container fade-in light-mode">
+        <h1 class="gradient-text">Převodník teplot</h1>
+
+        <div class="input-group">
+            <label for="temperature">Zadejte teplotu:</label>
+            <div class="input-container">
+                <input type="number" id="temperature" placeholder="Např. 25" oninput="convertTemperature()">
+                <select id="unitSelect" onchange="convertTemperature()">
+                    <option value="C">°C → °F</option>
+                    <option value="F">°F → °C</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="convertTemperature()">Převést</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function convertTemperature() {
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const unit = document.getElementById('unitSelect').value;
+            let resultText = '';
+
+            if (isNaN(temperature)) {
+                resultText = 'Prosím, zadejte platnou hodnotu!';
+            } else {
+                if (unit === 'C') {
+                    const fahrenheit = (temperature * 9/5) + 32;
+                    resultText = `${temperature} °C = ${fahrenheit.toFixed(2)} °F`;
+                } else {
+                    const celsius = (temperature - 32) * 5/9;
+                    resultText = `${temperature} °F = ${celsius.toFixed(2)} °C`;
+                }
+            }
+
+            const resultElement = document.getElementById('result');
+            resultElement.innerText = resultText;
+            resultElement.style.opacity = 1;
+            resultElement.style.transform = 'translateY(0)';
+            const darkModeClass = document.body.classList.contains('dark-mode') ? 'result-dark' : '';
+            resultElement.classList.add(darkModeClass);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('light-mode');
+            const container = document.querySelector('.container');
+            container.classList.toggle('dark-mode');
+            container.classList.toggle('light-mode');
+        }
+    </script>
+</body>
+</html>
